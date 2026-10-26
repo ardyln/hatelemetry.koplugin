@@ -57,11 +57,15 @@ function HATelemetry:init()
     self.ui.menu:registerToMainMenu(self)
     self:loadSettings()
 
+    -- KOReader creates a new plugin instance on every reader/file manager switch.
+    -- Move the periodic loop to it, so pushes and commands use the UI on screen.
+    if self.settings.loop_enabled then
+        UIManager:unschedule(self.pushLoop)
+        self:pushLoop(true)
+    end
+
     if not HATelemetry._initialized then
         HATelemetry._initialized = true
-        if self.settings.loop_enabled then
-            self:pushLoop(true)
-        end
         if self.settings.enabled then
             self:push(true)
         end
